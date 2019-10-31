@@ -1,3 +1,4 @@
+package test;
 /*
  * StringNode.java
  *
@@ -104,13 +105,26 @@ public class StringNode {
             return null;
         }
         
-        // Create the first node of the copy, copying the
-        // first character into it.
-        StringNode copyFirst = new StringNode(str.ch, null);
+//        // Create the first node of the copy, copying the
+//        // first character into it.
+//        StringNode copyFirst = new StringNode(str.ch, null);
+//        
+//        // Make a recursive call to get a copy of the rest, 
+//        // and store the result in the first node's next field.
+//        copyFirst.next = copy(str.next);
+//        return copyFirst;
         
-        // Make a recursive call to get a copy of the rest, 
-        // and store the result in the first node's next field.
-        copyFirst.next = copy(str.next);
+        StringNode temp = str;
+        StringNode copyFirst = new StringNode(temp.ch, temp.next);
+        StringNode copy = copyFirst;
+        
+        while(temp.next != null) {
+        	 StringNode copy1 = new StringNode(temp.next.ch, null);
+        	 copy.next = copy1;
+             temp = temp.next;
+             copy = copy.next;
+        }
+        
         return copyFirst;
     }
     
@@ -187,34 +201,72 @@ public class StringNode {
     public static StringNode insertAfter(StringNode str, char newChar, 
                                          char afterChar) 
     {
-        StringNode newNode = new StringNode(newChar, null);
+//        StringNode newNode = new StringNode(newChar, null);
+//        
+//        // If the string is empty, return the new node,
+//        // which is the new first node.
+//        if (str == null) {
+//            return newNode;
+//        }
+//        
+//        StringNode trail = null;
+//        StringNode trav = str;
+//        while (trav != null) {
+//            if (trav.ch == afterChar) {
+//                // Perform the insertion.
+//                newNode.next = trav.next;
+//                trav.next = newNode;
+//                
+//                // We're done. Return the first node as required.
+//                return str;
+//            }
+//            
+//            trail = trav;
+//            trav = trav.next;
+//        }
+//        
+//        // If we get here, we didn't find afterChar,
+//        // so we insert the new node at the end of the list
+//        // by using trail, which is pointing to the current last node.
+//        trail.next = newNode;
+//        return str;
         
-        // If the string is empty, return the new node,
-        // which is the new first node.
-        if (str == null) {
-            return newNode;
-        }
-        
-        StringNode trail = null;
-        StringNode trav = str;
-        while (trav != null) {
-            if (trav.ch == afterChar) {
-                // Perform the insertion.
-                newNode.next = trav.next;
-                trav.next = newNode;
-                
-                // We're done. Return the first node as required.
-                return str;
-            }
-            
-            trail = trav;
-            trav = trav.next;
-        }
-        
-        // If we get here, we didn't find afterChar,
-        // so we insert the new node at the end of the list
-        // by using trail, which is pointing to the current last node.
-        trail.next = newNode;
+        /*******/
+
+    	// insertAfter((h) , 'i', 'l')
+    	// h -> e -> l -> l -> o -> null
+    	
+    	/*
+    	StringNode newNode = new StringNode(newChar, null);
+    	 
+    	if(str == null) {
+    		return newNode;
+    	} 
+    	if(str.next.ch == afterChar) {
+    		return newNode;
+    	}
+    	insertAfter(str, newNode, afterChar);
+    	*/
+    	
+    	if(str == null || str.ch == '\n') {
+    		return new StringNode(newChar, null);
+    	}
+    	
+    	if(newChar == '\n' || newChar == ' ') {
+    		return str;
+    	}
+    	
+    	if(str.ch != afterChar) {
+    		insertAfter(str.next, newChar, afterChar);
+    	}
+    	else {
+    		StringNode newNode = new StringNode(newChar, null);
+    		
+    		StringNode temp = str.next;
+    		str.next = newNode;
+    		str.next.next = temp;
+    	}
+    	
         return str;
     }
     
@@ -281,15 +333,35 @@ public class StringNode {
      */
     public static boolean isPrefix(StringNode prefix, StringNode str) {
         // Three base cases.
-        if (prefix == null) {
-            return true;          // processed all of prefix without a mismatch
-        } else if (str == null) {
-            return false;         // str is shorter than prefix
-        } else if (str.ch != prefix.ch) {
-            return false;         // a mismatch
-        } else {
-            return isPrefix(prefix.next, str.next);
-        }
+//        if (prefix == null) {
+//            return true;          // processed all of prefix without a mismatch
+//        } else if (str == null) {
+//            return false;         // str is shorter than prefix
+//        } else if (str.ch != prefix.ch) {
+//            return false;         // a mismatch
+//        } else {
+//            return isPrefix(prefix.next, str.next);
+//        }
+    	if(str == null || prefix == null) {
+    		return false;
+    	}
+    	
+    	StringNode temp1 = str;
+    	StringNode temp2 = prefix;
+    	while(temp1 != null && temp2 != null) {
+    		
+    		if(temp1.ch != temp2.ch) {
+    			return false;
+    		} 
+    		temp1 = temp1.next;
+    		temp2 = temp2.next;
+    	}
+    	if(temp1 == null && temp2 != null) {
+    		return false;
+    	}
+ 
+    	return true;
+   	
     }
     
     /**
@@ -405,12 +477,13 @@ public class StringNode {
         //base case
         // if the str.next is null
         StringNode temp = str;
-        if(temp.next == null){
-            temp.ch = Character.toUpperCase(temp.ch);
-            return;
-        } else {
-            return temp;
+        
+        if(temp == null) {
+        	return;
         }
+        temp.ch = Character.toUpperCase(temp.ch);
+        toUpperCase(temp.next);
+     
     } 
     
     public static void main(String[] args) {
@@ -423,6 +496,12 @@ public class StringNode {
         System.out.print("Here it is in upper-case letters: "); 
         StringNode.toUpperCase(str);
         System.out.println(str);
+        
+        
+        // Test insertAfter
+        StringNode str44 = null;
+        str44 = StringNode.insertAfter(str44, 'a', 'b'); 
+        System.out.println(str44);
         
         // indexOf
         System.out.print("Enter a string: ");
@@ -450,6 +529,11 @@ public class StringNode {
         }
         System.out.println("a prefix of " + str1);
         
+        // test copy method
+        StringNode strCopy = StringNode.convert("Eugene");
+        StringNode strCopy2 = StringNode.copy(strCopy);
+        System.out.println("Copied ===");
+        System.out.println(strCopy2);
         
         // deleteChar and copy
         int n = -1;
